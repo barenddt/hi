@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Home Inspection Summary (Buyer Edition)</title>
+  <style>
+    :root{
+      --brand:#0A66C2; --brand-dark:#084d94;
+      --ok:#198754; --warn:#FFB020; --danger:#D92D20;
+      --bg:#f7f8fa; --card:#ffffff; --border:#eaeef3;
+      --ink:#22303C; --slate:#334E68;
+      --shadow:0 2px 12px rgba(2,32,71,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji"}
+    h1{font-size:1.9rem;font-weight:650;margin:0 0 .25rem}
+    h2{font-size:1.125rem;color:var(--brand);font-weight:650;margin:0}
+    p{margin:.25rem 0}
+    .container{max-width:1000px;margin:0 auto;padding:0 1rem}
+    .header{background:linear-gradient(90deg,var(--brand),var(--brand-dark));color:#fff}
+    .header .inner{padding:2rem 1rem}
+    .kicker{font-size:.95rem;color:#dfe9f7}
+    .controls{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin-top:.75rem}
+    .btn{border:0;border-radius:.5rem;background:rgba(255,255,255,.12);color:#fff;padding:.5rem .8rem;cursor:pointer}
+    .btn:hover{background:rgba(255,255,255,.2)}
+    .chip{border:0;border-radius:999px;padding:.35rem .7rem;cursor:pointer;color:#fff}
+    .chip[data-filter="all"]{background:rgba(255,255,255,.14)}
+    .chip[data-filter="safety"]{background:var(--danger)}
+    .chip[data-filter="maintain"]{background:var(--warn);color:#000}
+    .chip[data-filter="acceptable"]{background:var(--ok)}
+    .filter-ring{outline:2px solid #fff;outline-offset:2px;box-shadow:0 0 0 2px var(--brand) inset}
+    /* LEGEND */
+    .legend{display:flex;flex-wrap:wrap;gap:1rem;background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1.25rem;box-shadow:var(--shadow)}
+    .legend-item{flex:1 1 300px;display:flex;align-items:center;gap:.75rem;min-width:270px}
+    .legend-pill{display:flex;align-items:center;gap:.5rem;border-radius:999px;font-weight:700;padding:.35rem .6rem;white-space:nowrap;color:#fff}
+    .pill-danger{background:var(--danger)}
+    .pill-warn{background:var(--warn);color:#000}
+    .pill-ok{background:var(--ok)}
+    .legend-copy{font-size:.9rem;color:var(--slate)}
+    /* CARDS & GRID */
+    .section{margin-top:1rem}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:1rem;padding:1rem;box-shadow:var(--shadow)}
+    .grid{display:grid;gap:.75rem}
+    @media(min-width:740px){.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+    /* ITEMS */
+    .item{display:flex;gap:.75rem;align-items:flex-start;padding:.75rem;border:1px solid var(--border);border-radius:.75rem;background:#fff}
+    .icon{width:24px;height:24px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:.9rem;font-weight:700;margin-top:.15rem}
+    .icon.ok{background:var(--ok)} .icon.warn{background:var(--warn);color:#000} .icon.danger{background:var(--danger)}
+    .status-say{font-size:.72rem;font-weight:650;opacity:.85;text-transform:uppercase;margin-top:.15rem}
+    .say-ok{color:var(--ok)} .say-warn{color:#b07600} .say-danger{color:var(--danger)}
+    .note{font-size:.92rem;color:var(--slate)}
+    .hidden{display:none!important}
+    @media print{
+      .no-print{display:none!important}
+      .card{box-shadow:none}
+      .section{break-inside:avoid}
+      .header .inner{padding:1.25rem 1rem}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container inner">
+      <h1>Home Inspection Summary <span class="kicker">(Buyer Edition)</span></h1>
+      <p class="kicker">All findings with severity labels, icons, “says”, and clear recommendations</p>
+      <div class="controls no-print">
+        <button class="btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
+        <span class="kicker">Quick filter:</span>
+        <button class="chip filter-ring" data-filter="all">All</button>
+        <button class="chip" data-filter="safety">Repair</button>
+        <button class="chip" data-filter="maintain">Monitor</button>
+        <button class="chip" data-filter="acceptable">Safe</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding:1.25rem 1rem;">
+    <!-- Legend -->
+    <section class="legend">
+      <div class="legend-item">
+        <div class="legend-pill pill-danger">🔴 Repair</div>
+        <div class="legend-copy">High priority items that pose a safety risk or can cause damage if not addressed.</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-pill pill-warn">🟡 Monitor</div>
+        <div class="legend-copy">Maintenance items and suggested improvements to watch and schedule.</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-pill pill-ok">🟢 Safe</div>
+        <div class="legend-copy">Items in good/serviceable condition at time of inspection.</div>
+      </div>
+    </section>
+
+    <!-- Priority Checklist -->
+    <section class="section card">
+      <h2>At-a-Glance: Priority Checklist</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="safety">
+          <div>
+            <div class="icon danger">!</div>
+            <div class="status-say say-danger">Repair</div>
+          </div>
+          <div>
+            <p><strong>Replace Smoke Detectors (all floors/bedrooms)</strong></p>
+            <p class="note">Alarms are past 10-year lifespan — replace now with interconnected units w/ battery backup.</p>
+          </div>
+        </div>
+        <div class="item" data-severity="safety">
+          <div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div>
+          <div><p><strong>Secure Loose Toilets (Main, Upstairs, Master)</strong></p><p class="note">Reseat each toilet with a new wax ring and tighten to stop wobble and prevent hidden leaks.</p></div>
+        </div>
+        <div class="item" data-severity="safety">
+          <div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div>
+          <div><p><strong>Add Handrails/Guardrails (Exterior Stairs & Door)</strong></p><p class="note">Exterior stairs missing rails; one slider has no steps/deck — keep locked until safe access is built.</p></div>
+        </div>
+        <div class="item" data-severity="safety">
+          <div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div>
+          <div><p><strong>Fix Loose Garage Step Handrail</strong></p><p class="note">Re-anchor/brace the handrail to ensure stable, safe entry between garage and house.</p></div>
+        </div>
+        <div class="item" data-severity="maintain">
+          <div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div>
+          <div><p><strong>Clear Fresh-Air Intake & Replace/Correct HRV Filters</strong></p><p class="note">Clean clogged intake; replace dirty filters and correct backward filter for healthy ventilation & efficiency.</p></div>
+        </div>
+        <div class="item" data-severity="maintain">
+          <div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div>
+          <div><p><strong>Clear Slow Drains / Stuck Stopper</strong></p><p class="note">Main bath sink slow, basement tub slow, upstairs sink stopper stuck — clear traps or repair mechanisms.</p></div>
+        </div>
+        <div class="item" data-severity="maintain">
+          <div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div>
+          <div><p><strong>Install Sump Pump Battery Backup</strong></p><p class="note">Add backup so sump operates during power outages; test seasonally.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Helper to generate item blocks quickly (not used by JS, just template reference) -->
+    <template id="row">
+      <div class="item"><div><div class="icon">!</div><div class="status-say">STATUS</div></div><div><p><strong>TITLE</strong></p><p class="note">DESC</p></div></div>
+    </template>
+
+    <!-- Exterior -->
+    <section class="section card">
+      <h2>Exterior</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Driveway & Walkways (Concrete)</strong></p><p class="note">Good/fair condition. Seal cracks as they develop to limit damage and extend life.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Exterior Stairs – Missing Handrails/Guardrails</strong></p><p class="note">Install to improve access/egress safety, especially for children and the elderly.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Sliding Door – No Deck/Steps (Access Hazard)</strong></p><p class="note">Keep door locked/out of use until steps or a compliant deck with guard/handrails is installed.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Cladding (Vinyl/Brick/Parging)</strong></p><p class="note">Serviceable. Caulk/seal joints as routine maintenance to prevent water intrusion.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Gutters/Downspouts</strong></p><p class="note">Clean regularly; ensure extensions discharge above grade away from the foundation.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Electric Meter / Gas Meter</strong></p><p class="note">Underground service (limited visibility). Paint exterior gas piping to prevent rust; shutoff at meter.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Exterior Faucets (Hose Bibs)</strong></p><p class="note">Winterize before freezing temps; remove hoses and shut interior valves if available.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Lot Grading & Drainage</strong></p><p class="note">Maintain slope (~1&quot;/ft for 6 ft) away from foundation; re-grade low spots and keep beds off walls.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Fence/Gate</strong></p><p class="note">Gate sags and sticks — adjust hinges/post for smooth operation and proper latching.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Exterior Electrical (GFCI)</strong></p><p class="note">GFCI protection present and functional; test monthly.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Roof -->
+    <section class="section card">
+      <h2>Roof</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Roof Covering (Architectural Asphalt)</strong></p><p class="note">Original to 2015; serviceable with ~12–15 years expected remaining life; maintain annually.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Flashings & Penetrations</strong></p><p class="note">Reseal as needed on annual/semi-annual basis to prevent leaks.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Structure & Ventilation</strong></p><p class="note">No sagging/leaks observed; attic ventilation via roof/soffit vents appears effective.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Garage -->
+    <section class="section card">
+      <h2>Garage</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Overhead Door</strong></p><p class="note">Operates smoothly; sand/paint rusted bottom panel to halt corrosion.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Opener & Safety Reversal</strong></p><p class="note">Photo eyes and pressure reverse OK — test monthly.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Floor/Walls/Ceiling</strong></p><p class="note">Serviceable; seal new cracks if they appear. No active moisture noted.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Garage Step Handrail</strong></p><p class="note">Loose rail — re-secure for safe entry/exit.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Basement & Structure -->
+    <section class="section card">
+      <h2>Basement & Structure</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Foundation (Finished Basement)</strong></p><p class="note">Visible areas dry with no efflorescence. Continue monitoring hidden areas seasonally.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Joists/Beams/Posts</strong></p><p class="note">Good condition where visible; no structural concerns noted.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Basement Windows & Egress</strong></p><p class="note">In good condition; maintain caulking. Ensure window wells remain clear.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Plumbing -->
+    <section class="section card">
+      <h2>Plumbing</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Main Water Shutoff</strong></p><p class="note">Turns freely with no leaks. Exercise periodically and shut off for long trips.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Supply (Copper/PEX) & Drains (ABS)</strong></p><p class="note">No active leaks at visible sections; monitor under sinks & ceilings below baths.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Sump Pump</strong></p><p class="note">Activated on test (pit was dry). Add battery backup; test seasonally; ensure discharge routes away from home.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Water Heater -->
+    <section class="section card">
+      <h2>Water Heater</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Rheem Electric 62-Gal (2022)</strong></p><p class="note">Newer unit; TPR & piping present; no leaks observed. Set temp ~120°F for safety/efficiency.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Service & Longevity</strong></p><p class="note">Flush periodically; consider anode replacement ~5 years to prolong life; keep children away from TPR.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Electrical -->
+    <section class="section card">
+      <h2>Electrical</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>100-Amp Service & Breaker Panel</strong></p><p class="note">Modern breakers, labeled, with expansion slots; copper branch wiring; no issues observed.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>AFCI/GFCI Protection</strong></p><p class="note">AFCI on bedrooms; consider expanding AFCI to more circuits. GFCI in wet areas — test monthly.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Smoke/CO Alarms</strong></p><p class="note">Smoke detectors are past lifespan — replace now in bedrooms, outside sleeping areas, and on each floor; add CO alarms per floor.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Appliance Power Verification</strong></p><p class="note">Some appliances limited by utility during inspection — re-test oven/dryer on full power prior to close.</p></div></div>
+      </div>
+    </section>
+
+    <!-- HVAC -->
+    <section class="section card">
+      <h2>Heating, Ventilation &amp; Cooling</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Furnace (2015 High-Efficiency)</strong></p><p class="note">Operational; service annually and consider duct cleaning post-possession.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Fresh-Air Intake / HRV Filters</strong></p><p class="note">Clear clogged intake; replace/clean HRV filters; correct backward filter installation.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Humidifier (on Furnace)</strong></p><p class="note">Service annually (replace pad, check for leaks) or leave off if not needed.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Thermostat &amp; Distribution</strong></p><p class="note">Thermostat functional; heat balanced in rooms. Keep registers unblocked.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Kitchen -->
+    <section class="section card">
+      <h2>Kitchen</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Surfaces (Floors/Walls/Ceiling)</strong></p><p class="note">Dry and in good condition.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Counters/Cabinets</strong></p><p class="note">Serviceable; caulk along backsplash/counter seam to prevent seepage.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Sink &amp; Faucet</strong></p><p class="note">Good flow, no leaks noted.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Range &amp; Oven</strong></p><p class="note">Cooktop elements powered; oven untested due to utility — verify on walkthrough; complete installation &amp; anti-tip if needed.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Dishwasher &amp; Refrigerator</strong></p><p class="note">Operational at inspection; monitor for leaks and maintain filters/coils.</p></div></div>
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Vented Range Hood</strong></p><p class="note">Operational; clean filter regularly.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Bedrooms & Interior -->
+    <section class="section card">
+      <h2>Bedrooms &amp; Interior</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Floors/Walls/Ceilings/Doors</strong></p><p class="note">Dry and functional; typical minor cosmetics only.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Windows</strong></p><p class="note">Generally functional; repair one misaligned sash that doesn’t close properly.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Bathrooms -->
+    <section class="section card">
+      <h2>Bathrooms</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Main Floor – Slow Sink Drain</strong></p><p class="note">Clear obstruction; re-caulk sink/backsplash as needed.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Main Floor – Loose Toilet</strong></p><p class="note">Reseat &amp; tighten with new wax ring to prevent subfloor damage.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Upstairs – Stuck Sink Stopper</strong></p><p class="note">Repair/replace pop-up mechanism; ensure smooth operation.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Upstairs – Loose Toilet</strong></p><p class="note">Reseat &amp; tighten with new wax ring.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Basement – Slow Tub Drain</strong></p><p class="note">Clear obstruction; maintain caulking of surround.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Basement – Toilet Clearance</strong></p><p class="note">Tight side clearance; informational — no simple fix; use with care.</p></div></div>
+        <div class="item" data-severity="safety"><div><div class="icon danger">!</div><div class="status-say say-danger">Repair</div></div><div><p><strong>Master – Loose Toilet</strong></p><p class="note">Reseat &amp; tighten with new wax ring.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Laundry -->
+    <section class="section card">
+      <h2>Laundry</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Location &amp; Surfaces</strong></p><p class="note">Tile floor, dry walls/ceiling — good for moisture control.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Washer (Front-Load)</strong></p><p class="note">Door loose/damaged — repair to ensure proper seal; leave door open after use to prevent mildew.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Dryer &amp; Venting</strong></p><p class="note">Operational; clean entire vent duct annually; ensure exterior flap is clear.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Room Ventilation</strong></p><p class="note">No dedicated exhaust fan observed — keep door open during use or add a small exhaust fan.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Fireplace -->
+    <section class="section card">
+      <h2>Fireplace</h2>
+      <div class="grid grid-2" style="margin-top:.65rem">
+        <div class="item" data-severity="acceptable"><div><div class="icon ok">✓</div><div class="status-say say-ok">Safe</div></div><div><p><strong>Gas Fireplace (Direct-Vent)</strong></p><p class="note">Operational and serviceable; no issues observed.</p></div></div>
+        <div class="item" data-severity="maintain"><div><div class="icon warn">!</div><div class="status-say say-warn">Monitor</div></div><div><p><strong>Annual Service</strong></p><p class="note">Have a technician clean/service annually for safe, efficient operation; keep CO detectors active.</p></div></div>
+      </div>
+    </section>
+
+    <!-- Final Notes -->
+    <section class="section card" style="margin-bottom:2rem">
+      <h2>Final Notes & Tips</h2>
+      <p class="note">Address all <strong style="color:var(--danger)">Repair</strong> items first, then schedule <strong style="color:#b07600">Monitor</strong> items. Keep gutters clean, maintain caulking, test GFCI/AFCI and smoke/CO alarms monthly, and service HVAC annually. This summary is based on the original inspection; hidden areas were limited by finishes/storage. Continue routine monitoring after move-in.</p>
+    </section>
+  </main>
+
+  <footer class="container" style="text-align:center;color:#6b7b8f;margin:0 0 3rem">
+    Source: Home Inspection Report (2015-built home, InspHechtor Jeff Home Inspections). Self-contained styling (no external CSS).
+  </footer>
+
+  <script>
+    // Severity filter buttons
+    const chips = document.querySelectorAll('.chip');
+    const cards = document.querySelectorAll('[data-severity]');
+    chips.forEach(c => {
+      c.addEventListener('click', () => {
+        chips.forEach(x=>x.classList.remove('filter-ring'));
+        c.classList.add('filter-ring');
+        const f = c.dataset.filter;
+        cards.forEach(el => {
+          if (f === 'all' || el.dataset.severity === f) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
